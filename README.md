@@ -1,135 +1,390 @@
-# Turborepo starter
+# 🎨 Excali-Plus
 
-This Turborepo starter is maintained by the Turborepo core team.
+> **A real-time collaborative whiteboard built from scratch with a custom canvas engine, WebSockets, and a scalable TypeScript monorepo.**
 
-## Using this example
+Excali-Plus is a real-time collaborative whiteboard application designed to make drawing, diagramming, and collaboration seamless.
 
-Run the following command:
+It combines a **custom canvas rendering engine**, **real-time WebSocket synchronization**, **room-based collaboration**, and **secure authentication** — all organized inside a scalable **Turborepo monorepo**.
 
-```sh
-npx create-turbo@latest
+---
+
+##  Features
+
+| Feature                       | Description                                                                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+|  **Real-Time Collaboration** | Synchronize canvas changes across multiple clients using a dedicated WebSocket backend.            |
+|  **Custom Canvas Engine**   | Hand-built rendering system with hit testing, resizing, viewport management, and canvas utilities. |
+|  **Shape & Tool System**    | Extensible element factory and tool state management for different drawing operations.             |
+|  **Room-Based Sessions**    | Create, join, and share isolated collaborative canvas rooms.                                       |
+|  **Authentication**         | Traditional sign-up/sign-in flows with Google Login support.                                       |
+| ↩ **Undo / Redo**            | History middleware tracks canvas state changes for reliable undo and redo operations.              |
+|  **Canvas Export**         | Export your drawings and diagrams as images.                                                       |
+|  **Monorepo Architecture**  | Shared packages and independently deployable applications managed with Turborepo and pnpm.         |
+
+---
+
+##  Architecture
+
+Excali-Plus follows a layered architecture where the frontend, HTTP API, real-time communication, and database are separated into independently maintainable services.
+
+```mermaid
+flowchart TB
+    Client["🖥️ Next.js Client"]
+
+    Client --> Canvas["🎨 Custom Canvas Engine"]
+    Client --> HTTP["🌐 HTTP API"]
+    Client --> WS["⚡ WebSocket Server"]
+
+    HTTP --> Auth["🔐 Auth"]
+    HTTP --> Rooms["🚪 Rooms"]
+    HTTP --> Chats["💬 Chats"]
+
+    WS --> Sync["🔄 Real-Time Canvas Sync"]
+
+    HTTP --> Prisma["Prisma ORM"]
+    WS --> Prisma
+
+    Prisma --> DB[("🐘 PostgreSQL")]
+
+    Shared["📦 Shared Packages"]
+    Shared --> Client
+    Shared --> HTTP
+    Shared --> WS
 ```
 
-## What's inside?
+##  Tech Stack
 
-This Turborepo includes the following packages/apps:
+### Frontend
 
-### Apps and Packages
+* **Next.js** — App Router
+* **React**
+* **TypeScript**
+* **Redux** — Canvas, history, tools, UI, and user state
+* **Tailwind CSS**
+* Custom Canvas Rendering Engine
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Backend
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+* **Node.js**
+* **Express.js** — REST API
+* **WebSocket** — Real-time collaboration
+* **Prisma ORM**
+* **PostgreSQL**
 
-### Utilities
+### Infrastructure & Tooling
 
-This Turborepo has some additional tools already setup for you:
+* **Turborepo** — Monorepo orchestration
+* **pnpm** — Workspace and package management
+* **Docker**
+* **Docker Compose**
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+---
 
-### Build
+##  Project Structure
 
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```text
+excali-plus/
+│
+├── apps/
+│   │
+│   ├── excali-plus/                  # Next.js frontend
+│   │   ├── app/
+│   │   │   ├── auth/
+│   │   │   ├── canvas/
+│   │   │   │   └── [roomId]/
+│   │   │   └── ...
+│   │   │
+│   │   ├── components/
+│   │   │   ├── Canvas.tsx
+│   │   │   ├── AuthBox.tsx
+│   │   │   ├── ToolOptionsPanel.tsx
+│   │   │   └── ZoomControls.tsx
+│   │   │
+│   │   ├── store/
+│   │   │   ├── canvas/
+│   │   │   ├── history/
+│   │   │   ├── tools/
+│   │   │   ├── ui/
+│   │   │   └── user/
+│   │   │
+│   │   └── utils/
+│   │       ├── renderCanvas.ts
+│   │       ├── hitTest.ts
+│   │       └── elementFactory.ts
+│   │
+│   ├── http-backend/                  # REST API
+│   │   └── src/
+│   │       ├── controllers/
+│   │       ├── routes/
+│   │       └── middlewares/
+│   │
+│   └── ws-backend/                    # Real-time WebSocket server
+│
+├── packages/
+│   │
+│   ├── db/                            # Prisma + PostgreSQL
+│   │   ├── schema.prisma
+│   │   └── migrations/
+│   │
+│   ├── ui/                            # Shared UI components
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   └── input.tsx
+│   │
+│   ├── common/                        # Shared types & utilities
+│   ├── backend-common/                # Shared backend utilities
+│   ├── eslint-config/                 # Shared ESLint configuration
+│   └── typescript-config/             # Shared TypeScript configuration
+│
+├── package.json
+├── pnpm-workspace.yaml
+└── turbo.json
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+---
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+##  Getting Started
 
+### Prerequisites
+
+Make sure you have the following installed:
+
+* [Node.js](https://nodejs.org/)
+* [pnpm](https://pnpm.io/)
+* [Docker](https://www.docker.com/)
+* Docker Compose
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+
+cd excali-plus
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+### 2. Install Dependencies
+
+Install all workspace dependencies using pnpm:
+
+```bash
+pnpm install
 ```
 
-## Useful Links
+---
 
-Learn more about the power of Turborepo:
+### 3. Configure Environment Variables
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Create the required `.env` files using the provided `.env.example` files.
+
+Environment configuration is required for:
+
+```text
+apps/http-backend/
+apps/ws-backend/
+```
+
+Make sure the required database, authentication, and service configuration values are populated before starting the application.
+
+---
+
+### 4. Start PostgreSQL
+
+The database is configured through Docker Compose.
+
+```bash
+cd packages/db
+
+docker-compose up -d
+```
+
+---
+
+### 5. Run Prisma Migrations
+
+Initialize the database schema:
+
+```bash
+pnpm dlx prisma migrate dev
+```
+
+---
+
+### 6. Start the Development Environment
+
+From the repository root:
+
+```bash
+pnpm run dev
+```
+
+This starts the Turborepo development environment and runs the required applications together.
+
+---
+
+##  Custom Canvas Engine
+
+One of the core parts of Excali-Plus is its custom canvas rendering engine.
+
+Instead of relying entirely on a third-party whiteboard implementation, the project handles important canvas operations internally.
+
+### Core Responsibilities
+
+```text
+User Interaction
+       │
+       ▼
+┌─────────────────┐
+│ Tool Management │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ Element Factory │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ Canvas State    │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ Canvas Renderer │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ Hit Testing /   │
+│ Viewport Logic  │
+└─────────────────┘
+```
+
+Key utilities include:
+
+* `renderCanvas.ts` — Canvas rendering logic
+* `hitTest.ts` — Detect interaction with canvas elements
+* `elementFactory.ts` — Create and manage drawable elements
+
+---
+
+##  Real-Time Collaboration
+
+Excali-Plus uses a dedicated WebSocket backend for low-latency synchronization between clients.
+
+```text
+       Client A                         Client B
+          │                               │
+          │       Canvas Update           │
+          ├──────────────┐                │
+          │              ▼                │
+          │       WebSocket Server        │
+          │              │                │
+          │       Broadcast Update        │
+          │              ├────────────────►
+          │                               │
+          ▼                               ▼
+     Updated Canvas                  Updated Canvas
+```
+
+This separation allows real-time canvas communication to remain independent from the traditional HTTP API.
+
+---
+
+##  State Management
+
+The frontend uses Redux to keep different application concerns isolated.
+
+```text
+Redux Store
+│
+├── canvas    → Canvas elements & drawing state
+├── history   → Undo / Redo state
+├── tools     → Active drawing tools
+├── ui        → UI state
+└── user      → Authentication / user state
+```
+
+This structure keeps canvas interactions predictable while allowing history and UI state to evolve independently.
+
+---
+
+##  Monorepo
+
+The project uses **Turborepo + pnpm workspaces** to manage applications and shared packages from a single repository.
+
+This provides:
+
+* Shared TypeScript configuration
+* Reusable UI components
+* Shared types
+* Centralized database package
+* Independent backend services
+* Consistent development tooling
+* Scalable workspace management
+
+```text
+                    Excali-Plus
+                        │
+             ┌──────────┴──────────┐
+             │                     │
+           Apps                 Packages
+             │                     │
+     ┌───────┼───────┐      ┌──────┼─────────┐
+     │       │       │      │      │         │
+   Next.js  HTTP     WS     DB     UI     Common
+```
+
+---
+
+## 🐳 Docker
+
+Docker is used to simplify local infrastructure and database setup.
+
+Start the database with:
+
+```bash
+cd packages/db
+docker-compose up -d
+```
+
+Stop running containers with:
+
+```bash
+docker-compose down
+```
+
+---
+
+
+## 🤝 Contributing
+
+Contributions, ideas, and feedback are welcome.
+
+A typical development workflow:
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start infrastructure
+cd packages/db
+docker-compose up -d
+
+# Run migrations
+pnpm dlx prisma migrate dev
+
+# Start development
+cd ../..
+pnpm run dev
+```
+
+Before submitting a change, make sure the affected application/package builds and the existing functionality continues to work as expected.
+
+---
+
+
+<div align="center">
+
+### Built with TypeScript, WebSockets & a lot of canvas math. 🎨
+
+**Excali-Plus** — Draw. Collaborate. Create.
+
+</div>
