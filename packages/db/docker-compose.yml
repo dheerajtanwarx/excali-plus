@@ -3,9 +3,9 @@ services:
     container_name: excali-plus
     image: postgres:18-alpine
     environment:
-      POSTGRES_USER: dev-amanydv
+      POSTGRES_USER: excali-plus
       POSTGRES_PASSWORD: excali-plus
-      POSTGRES_DB: canvas-db
+      POSTGRES_DB: excali-plus
     volumes:
       - pgdata:/var/lib/postgresql
     ports:
